@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Demo Django{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul>
+                <li><strong>Demo Django</strong></li>
+            </ul>
+            <ul>
+                {% if user.is_authenticated %}
+                    <li>{{ user.username }}</li>
+                    <li><a href="{% url 'logout' %}">Cerrar sesión</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Iniciar sesión</a></li>
+                    <li><a href="{% url 'accounts:register' %}">Registrarse</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        {% if messages %}
+            <article>
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            </article>
+        {% endif %}
+
+        <section>
+            {% block content %}
+            <h1>Bienvenido a la demo</h1>
+            <p>Utiliza el menú para iniciar sesión o registrarte.</p>
+            {% endblock %}
+        </section>
+    </main>
+</body>
+</html>
