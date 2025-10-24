@@ -6,6 +6,8 @@ Proyecto base de Django configurado para múltiples entornos y preparado para vi
 
 - Configuración separada para `development`, `staging` y `production`.
 - Base de datos PostgreSQL configurable mediante variables de entorno.
+- Archivos `.env` específicos por entorno en `envs/` cargados automáticamente
+  por los módulos de configuración.
 - Frontend basado en plantillas de Django con vistas de inicio de sesión y registro.
 - Preparado para exponer APIs mediante Django REST Framework.
 
@@ -23,19 +25,14 @@ Proyecto base de Django configurado para múltiples entornos y preparado para vi
    source .venv/bin/activate
    pip install -r requirements.txt
    ```
-2. Define las variables de entorno necesarias:
+2. Copia y ajusta los archivos de variables de entorno ubicados en `envs/`.
+   Para desarrollo puedes partir de `envs/dev.env` y modificar los valores
+   según tu entorno local.
+3. Ejecuta las migraciones y levanta el servidor de desarrollo indicando el
+   módulo de configuración correspondiente:
    ```bash
-   export DJANGO_SETTINGS_MODULE=core.settings.development
-   export POSTGRES_DB=demo_dj
-   export POSTGRES_USER=demo_dj
-   export POSTGRES_PASSWORD=demo_dj
-   export POSTGRES_HOST=localhost
-   export POSTGRES_PORT=5432
-   ```
-3. Ejecuta las migraciones y levanta el servidor de desarrollo:
-   ```bash
-   python manage.py migrate
-   python manage.py runserver
+   python manage.py migrate --settings=core.settings.development
+   python manage.py runserver --settings=core.settings.development
    ```
 
 Las vistas de autenticación están disponibles en `/accounts/login/` y `/accounts/register/`.

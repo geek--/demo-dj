@@ -1,5 +1,11 @@
 """Staging settings."""
 
+from pathlib import Path
+
+from .utils import load_env_file
+
+load_env_file(Path(__file__).resolve().parent.parent.parent / "envs" / "staging.env")
+
 from .base import *  # noqa: F401,F403
 
 import os
