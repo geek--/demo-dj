@@ -2,13 +2,13 @@
 
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 
-from .forms import UserRegistrationForm
+from .forms import StyledAuthenticationForm, UserRegistrationForm
 
 
 class UserLoginView(LoginView):
@@ -16,6 +16,26 @@ class UserLoginView(LoginView):
 
     template_name = "registration/login.html"
     redirect_authenticated_user = True
+    form_class = StyledAuthenticationForm
+
+
+class UserLogoutView(LogoutView):
+    """Handle user logout for both GET and POST requests."""
+
+    next_page = reverse_lazy("login")
+    http_method_names = ["get", "post", "options", "head"]
+
+    def _add_logout_message(self, request: HttpRequest) -> None:
+        if request.user.is_authenticated:
+            messages.success(request, "Has cerrado sesión correctamente.")
+
+    def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        self._add_logout_message(request)
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
+        self._add_logout_message(request)
+        return super().post(request, *args, **kwargs)
 
 
 class RegisterView(View):

@@ -5,9 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Demo Django{% endblock %}</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <main class="container">
+<body class="{% block body_class %}{% endblock %}">
+    <main class="{% block main_class %}container{% endblock %}">
+        {% block navigation %}
         <nav>
             <ul>
                 <li><strong>Demo Django</strong></li>
@@ -22,6 +24,7 @@
                 {% endif %}
             </ul>
         </nav>
+        {% endblock %}
 
         {% if messages %}
             <article>
