@@ -1,0 +1,930 @@
+{% extends "base.html" %}
+
+{% block title %}Panel | Demo Django{% endblock %}
+
+{% block body_class %}layout-profile{% endblock %}
+{% block header %}{% endblock %}
+{% block main_class %}profile-main{% endblock %}
+
+{% block extra_head %}
+<style>
+    body.layout-profile {
+        background: #0b101a;
+        --pico-block-spacing-vertical: 0;
+        --pico-block-spacing-horizontal: 0;
+        --pico-form-element-spacing-vertical: 0;
+        --pico-form-element-spacing-horizontal: 0;
+        --pico-border-radius: 0;
+        --pico-font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.layout-profile main,
+    body.layout-profile header,
+    body.layout-profile nav,
+    body.layout-profile aside,
+    body.layout-profile section,
+    body.layout-profile article {
+        max-width: none;
+        margin: 0;
+    }
+
+    main.profile-main {
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+    }
+
+    .profile-frame {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        min-height: 100vh;
+        background: #1a1d21;
+        color: #f8fafc;
+    }
+
+    .workspace-topbar {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        padding: 0.5rem 0.85rem;
+        background: #232529;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.35);
+        gap: 0.75rem;
+    }
+
+    .window-controls {
+        display: inline-flex;
+        gap: 0.4rem;
+    }
+
+    .window-controls span {
+        width: 0.7rem;
+        height: 0.7rem;
+        border-radius: 50%;
+        display: inline-flex;
+    }
+
+    .window-controls span:nth-child(1) {
+        background: #ff5f57;
+    }
+
+    .window-controls span:nth-child(2) {
+        background: #febc2e;
+    }
+
+    .window-controls span:nth-child(3) {
+        background: #28c840;
+    }
+
+    .workspace-topbar .workspace-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: rgba(255, 255, 255, 0.68);
+    }
+
+    .workspace-topbar .user-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.28);
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .workspace-topbar .user-chip span {
+        width: 1.6rem;
+        height: 1.6rem;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: rgba(148, 163, 184, 0.42);
+        font-size: 0.85rem;
+    }
+
+    .workspace-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
+    }
+
+    .workspace-rail,
+    .workspace-secondary,
+    .workspace-content {
+        min-height: 0;
+    }
+
+    .workspace-rail {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 0.55rem;
+        background: #0f1013;
+        overflow-x: auto;
+        border-bottom: 1px solid rgba(15, 23, 42, 0.45);
+    }
+
+    .workspace-rail button {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 0.55rem;
+        border: none;
+        background: rgba(248, 250, 252, 0.08);
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 600;
+        display: inline-grid;
+        place-items: center;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .workspace-rail button.is-active,
+    .workspace-rail button:hover,
+    .workspace-rail button:focus-visible {
+        background: #611f69;
+        color: #ffffff;
+        outline: none;
+    }
+
+    .workspace-secondary {
+        background: #3f0e40;
+        padding: 0.95rem 1rem 1.35rem;
+        display: grid;
+        gap: 0.95rem;
+    }
+
+    .workspace-secondary header {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    .workspace-secondary .team-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+    }
+
+    .workspace-secondary .team-meta {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(255, 255, 255, 0.52);
+    }
+
+    .nav-group {
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    .nav-group__label {
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        color: rgba(255, 255, 255, 0.45);
+    }
+
+    .nav-group__list {
+        display: grid;
+        gap: 0.12rem;
+    }
+
+    .nav-group__list form {
+        margin: 0;
+    }
+
+    .nav-group__list button,
+    .nav-group__list a {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        padding: 0.35rem 0.45rem;
+        border-radius: 0.4rem;
+        background: transparent;
+        border: none;
+        color: inherit;
+        text-decoration: none;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .nav-group__list button .indicator,
+    .nav-group__list a .indicator {
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.35);
+    }
+
+    .nav-group__list button.is-active,
+    .nav-group__list button:hover,
+    .nav-group__list button:focus-visible,
+    .nav-group__list a:hover,
+    .nav-group__list a:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+        outline: none;
+    }
+
+    .nav-group__list button.is-active .indicator {
+        background: #ecb22e;
+    }
+
+    .workspace-content {
+        background: #ffffff;
+        color: #1d1f21;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-height: 0;
+    }
+
+    .workspace-content {
+        background: #ffffff;
+        color: #1d1f21;
+        display: grid;
+        grid-template-rows: auto 1fr;
+        min-height: 0;
+    }
+
+    .workspace-channel-header {
+        padding: 0.95rem 1.25rem 0.75rem;
+        border-bottom: 1px solid #e2e8f0;
+        display: grid;
+        gap: 0.3rem;
+        align-content: start;
+    }
+
+    .channel-title-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+    }
+
+    .channel-title-row h1 {
+        margin: 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: #1f2933;
+    }
+
+    .channel-title-row span {
+        font-size: 0.85rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+    }
+
+    .channel-meta-row {
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+        font-size: 0.8rem;
+        color: #64748b;
+    }
+
+    .channel-meta-row span + span::before {
+        content: "•";
+        margin-right: 0.75rem;
+        color: #cbd5f5;
+    }
+
+    .workspace-channel-body {
+        overflow: hidden;
+        padding: 0;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        column-gap: 0;
+    }
+
+    .channel-stream {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        min-height: 0;
+    }
+
+    .channel-threads {
+        padding: 1.05rem 1.35rem 1.65rem;
+        display: grid;
+        gap: 0.95rem;
+        overflow-y: auto;
+        min-height: 0;
+        align-content: start;
+    }
+
+    .message-thread {
+        display: grid;
+        gap: 0.85rem;
+    }
+
+    .message-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.6rem;
+        align-items: start;
+    }
+
+    .message-avatar {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 0.35rem;
+        background: #611f69;
+        color: #f8fafc;
+        display: grid;
+        place-items: center;
+        font-weight: 600;
+    }
+
+    .message-content {
+        display: grid;
+        gap: 0.3rem;
+    }
+
+    .message-meta {
+        display: flex;
+        align-items: baseline;
+        gap: 0.55rem;
+    }
+
+    .message-meta strong {
+        font-size: 0.95rem;
+        color: #1f2933;
+    }
+
+    .message-meta span {
+        font-size: 0.78rem;
+        color: #94a3b8;
+    }
+
+    .message-text {
+        font-size: 0.9rem;
+        color: #4a5568;
+        line-height: 1.55;
+    }
+
+    .message-attachments {
+        display: grid;
+        gap: 0.45rem;
+    }
+
+    .attachment-card {
+        border-left: 3px solid #611f69;
+        background: #f8f5fb;
+        padding: 0.65rem 0.85rem;
+        border-radius: 0.35rem;
+        display: grid;
+        gap: 0.3rem;
+    }
+
+    .attachment-card strong {
+        color: #3b0f3b;
+        font-size: 0.9rem;
+    }
+
+    .message-composer {
+        border-top: 1px solid #e2e8f0;
+        padding: 0.8rem 1.25rem 0.95rem;
+        display: grid;
+        gap: 0.55rem;
+        background: #ffffff;
+    }
+
+    .composer-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.85rem;
+        align-items: center;
+    }
+
+    .composer-actions button,
+    .composer-actions span {
+        border: none;
+        background: none;
+        color: #64748b;
+        font-size: 0.88rem;
+        cursor: pointer;
+    }
+
+    .message-composer textarea {
+        width: 100%;
+        min-height: 3.5rem;
+        border-radius: 0.4rem;
+        border: 1px solid #d5d9e3;
+        padding: 0.55rem 0.75rem;
+        font-size: 0.9rem;
+        resize: vertical;
+    }
+
+    .composer-submit {
+        justify-self: end;
+        padding: 0.4rem 1.05rem;
+        border-radius: 999px;
+        background: #611f69;
+        color: #ffffff;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    .channel-detail {
+        border-left: 1px solid #e2e8f0;
+        background: #f8fafc;
+        padding: 1.1rem 1.2rem 1.65rem;
+        display: grid;
+        gap: 1.1rem;
+        overflow-y: auto;
+        min-height: 0;
+    }
+
+    .detail-card {
+        display: grid;
+        gap: 0.5rem;
+        font-size: 0.83rem;
+        color: #475569;
+    }
+
+    .detail-card h2 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #334155;
+    }
+
+    .detail-list {
+        display: grid;
+        gap: 0.45rem;
+        padding: 0;
+        margin: 0;
+    }
+
+    .detail-list li {
+        list-style: none;
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        align-items: baseline;
+    }
+
+    .detail-list strong {
+        color: #1f2937;
+        font-size: 0.85rem;
+    }
+
+    .detail-list span {
+        color: #94a3b8;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+    @media (min-width: 60rem) {
+        .workspace-body {
+            display: grid;
+            grid-template-columns: 4.4rem 19.5rem minmax(0, 1fr);
+            height: calc(100vh - 2.9rem);
+        }
+
+        .workspace-rail {
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 1.4rem 0.65rem;
+            width: 100%;
+            border-bottom: none;
+            border-right: 1px solid rgba(15, 23, 42, 0.45);
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .workspace-secondary {
+            overflow-y: auto;
+        }
+
+        .workspace-channel-body {
+            grid-template-columns: minmax(0, 1fr);
+        }
+    }
+
+    @media (min-width: 75rem) {
+        .workspace-channel-body {
+            grid-template-columns: minmax(0, 1.9fr) minmax(18rem, 1fr);
+        }
+    }
+
+    @media (max-width: 59.99rem) {
+        .workspace-secondary {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .workspace-content {
+            border-top: 1px solid rgba(15, 23, 42, 0.3);
+        }
+
+        .channel-threads {
+            padding: 1rem 1.15rem 1.75rem;
+        }
+
+        .channel-detail {
+            border-left: none;
+            border-top: 1px solid #e2e8f0;
+            padding: 1.2rem 1.5rem 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-frame" data-profile-shell>
+    <header class="workspace-topbar">
+        <div class="window-controls" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <span class="workspace-title">Espacio de trabajo</span>
+        <div class="user-chip">
+            <span>{{ user.get_full_name|default:user.username|slice:":1" }}</span>
+            {{ user.get_full_name|default:user.username }}
+        </div>
+    </header>
+    <div class="workspace-body">
+        <nav class="workspace-rail" aria-label="Barra principal">
+            <button type="button" class="is-active" data-rail="principal" aria-pressed="true" title="Panel principal">DG</button>
+            <button type="button" data-rail="equipo" aria-pressed="false" title="Equipo">EQ</button>
+            <button type="button" data-rail="reportes" aria-pressed="false" title="Reportes">RP</button>
+        </nav>
+        <aside class="workspace-secondary" aria-label="Navegación secundaria">
+            <header>
+                <div class="team-meta">Proyecto actual</div>
+                <div class="team-name">Demo Django</div>
+            </header>
+            <div class="nav-group" data-scope="principal">
+                <span class="nav-group__label">Canales</span>
+                <div class="nav-group__list">
+                    <button type="button" class="is-active" data-section-target="general">
+                        <span class="indicator"></span>
+                        # general
+                    </button>
+                    <button type="button" data-section-target="novedades">
+                        <span class="indicator"></span>
+                        # novedades
+                    </button>
+                    <button type="button" data-section-target="soporte">
+                        <span class="indicator"></span>
+                        # soporte
+                    </button>
+                </div>
+            </div>
+            <div class="nav-group" data-scope="equipo" hidden>
+                <span class="nav-group__label">Equipo</span>
+                <div class="nav-group__list">
+                    <button type="button" data-section-target="equipo">
+                        <span class="indicator"></span>
+                        # equipo
+                    </button>
+                    <button type="button" data-section-target="contrataciones">
+                        <span class="indicator"></span>
+                        # contrataciones
+                    </button>
+                    <button type="button" data-section-target="productividad">
+                        <span class="indicator"></span>
+                        # productividad
+                    </button>
+                </div>
+            </div>
+            <div class="nav-group" data-scope="reportes" hidden>
+                <span class="nav-group__label">Reportes</span>
+                <div class="nav-group__list">
+                    <button type="button" data-section-target="indicadores">
+                        <span class="indicator"></span>
+                        # indicadores
+                    </button>
+                    <button type="button" data-section-target="insights">
+                        <span class="indicator"></span>
+                        # insights
+                    </button>
+                    <button type="button" data-section-target="retrospectiva">
+                        <span class="indicator"></span>
+                        # retrospectiva
+                    </button>
+                </div>
+            </div>
+            <div class="nav-group">
+                <span class="nav-group__label">Cuenta</span>
+                <div class="nav-group__list">
+                    <form method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">
+                            <span class="indicator"></span>
+                            Cerrar sesión
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </aside>
+        <section class="workspace-content">
+            <div class="workspace-channel-header" data-active-label>
+                <div class="channel-title-row">
+                    <h1>#general</h1>
+                    <span>Público</span>
+                </div>
+                <div class="channel-meta-row">
+                    <span>Planifica y coordina la estrategia social media.</span>
+                    <span>42 miembros</span>
+                    <span>Actualizado hace 1 hora</span>
+                </div>
+            </div>
+            <div class="workspace-channel-body">
+                <div class="channel-stream">
+                    <div class="channel-threads">
+                    <div class="message-thread" data-section="general">
+                        <article class="message-card">
+                            <div class="message-avatar">{{ user.get_full_name|default:user.username|slice:":1" }}</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                    <span>hoy a las 09:24</span>
+                                </div>
+                                <p class="message-text">
+                                    Bienvenido al espacio de trabajo. Usa este canal para centralizar los avances del proyecto, compartir recursos clave y coordinar las tareas próximas.
+                                </p>
+                                <div class="message-attachments">
+                                    <div class="attachment-card">
+                                        <strong>Roadmap Q3</strong>
+                                        <span>Documento con los hitos y entregables priorizados.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="message-card">
+                            <div class="message-avatar">LD</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Lisa Dawson</strong>
+                                    <span>hoy a las 11:55</span>
+                                </div>
+                                <p class="message-text">
+                                    ¡Gran trabajo con el sprint! Kudos para @zoe por mantener el ritmo con el backlog y compartir el resumen con el equipo.
+                                </p>
+                            </div>
+                        </article>
+                        <article class="message-card">
+                            <div class="message-avatar">PM</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Project Manager</strong>
+                                    <span>ayer a las 16:10</span>
+                                </div>
+                                <p class="message-text">
+                                    Recordatorio: mañana a las 10:00 tendremos la sesión de planificación del próximo ciclo. Traigan actualizadas sus métricas clave.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="novedades" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">DS</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Data Science</strong>
+                                    <span>hoy a las 08:05</span>
+                                </div>
+                                <p class="message-text">
+                                    Desplegamos el nuevo pipeline de analítica. El reporte automatizado se actualizará cada dos horas con los indicadores prioritarios.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="soporte" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">IT</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Soporte TI</strong>
+                                    <span>martes a las 11:18</span>
+                                </div>
+                                <p class="message-text">
+                                    Cualquier incidencia en las integraciones o credenciales puede reportarse aquí. Respondemos en menos de 30 minutos en horario laboral.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="equipo" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">CH</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Chapter Leads</strong>
+                                    <span>lunes 14:00</span>
+                                </div>
+                                <p class="message-text">
+                                    Coordinemos agendas para la sesión de revisión de objetivos trimestrales. Compartí la propuesta inicial en los archivos fijados.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="contrataciones" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">RR</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Recruiting</strong>
+                                    <span>viernes 10:27</span>
+                                </div>
+                                <p class="message-text">
+                                    Tenemos entrevistas con candidatos QA el jueves. Comparte aquí preguntas o pruebas técnicas sugeridas.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="productividad" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">OP</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Operaciones</strong>
+                                    <span>ayer 13:05</span>
+                                </div>
+                                <p class="message-text">
+                                    Ajustamos el dashboard semanal para incluir métricas de soporte. Valida si falta algún indicador relevante.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="indicadores" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">BI</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Business Intelligence</strong>
+                                    <span>hoy 07:40</span>
+                                </div>
+                                <p class="message-text">
+                                    El índice de retención subió 4 puntos porcentuales respecto a la semana pasada. Revise el informe adjunto para más detalles.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="insights" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">UX</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Investigación UX</strong>
+                                    <span>miércoles 09:55</span>
+                                </div>
+                                <p class="message-text">
+                                    Los resultados de las pruebas A/B están disponibles. El flujo de registro con onboarding guiado obtiene un 18% más de conversiones.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="message-thread" data-section="retrospectiva" hidden>
+                        <article class="message-card">
+                            <div class="message-avatar">SM</div>
+                            <div class="message-content">
+                                <div class="message-meta">
+                                    <strong>Scrum Master</strong>
+                                    <span>jueves 17:20</span>
+                                </div>
+                                <p class="message-text">
+                                    Compartimos la retro de este sprint. Añade tus aprendizajes y oportunidades de mejora antes del viernes.
+                                </p>
+                            </div>
+                        </article>
+                    </div>
+                    </div>
+                    <form class="message-composer" action="#" method="post">
+                        <div class="composer-actions">
+                            <span>Mensaje a <strong data-active-target>#general</strong></span>
+                            <button type="button" aria-label="Agregar archivo">＋</button>
+                        </div>
+                        <textarea placeholder="Escribe tu actualización..." disabled></textarea>
+                        <button type="button" class="composer-submit" disabled>Enviar</button>
+                    </form>
+                </div>
+                <aside class="channel-detail">
+                    <div class="detail-card">
+                        <h2>Acerca de</h2>
+                        <p>Espacio para coordinar campañas sociales, calendarizar contenido y compartir métricas clave.</p>
+                        <ul class="detail-list">
+                            <li><span>Propietario</span><strong>Marketing</strong></li>
+                            <li><span>Creado</span><strong>10 Oct 2019</strong></li>
+                            <li><span>Visibilidad</span><strong>Público</strong></li>
+                        </ul>
+                    </div>
+                    <div class="detail-card">
+                        <h2>Miembros</h2>
+                        <ul class="detail-list">
+                            <li><span>Responsable</span><strong>Lisa Dawson</strong></li>
+                            <li><span>Equipo</span><strong>Social Media</strong></li>
+                            <li><span>Stakeholders</span><strong>Dirección</strong></li>
+                        </ul>
+                    </div>
+                    <div class="detail-card">
+                        <h2>Elementos fijados</h2>
+                        <ul class="detail-list">
+                            <li><span>Documento</span><strong>Guía de branding</strong></li>
+                            <li><span>Recordatorio</span><strong>Revisión semanal</strong></li>
+                        </ul>
+                    </div>
+                    <div class="detail-card">
+                        <h2>Compartido</h2>
+                        <ul class="detail-list">
+                            <li><span>Archivo</span><strong>Reporte KPIs.pdf</strong></li>
+                            <li><span>Enlace</span><strong>Tablero Analytics</strong></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const shell = document.querySelector('[data-profile-shell]');
+        if (!shell) return;
+
+        const primaryButtons = shell.querySelectorAll('.workspace-rail button[data-rail]');
+        const secondaryGroups = shell.querySelectorAll('.nav-group[data-scope]');
+        const sectionButtons = shell.querySelectorAll('[data-section-target]');
+        const contentSections = shell.querySelectorAll('[data-section]');
+        const activeLabel = shell.querySelector('[data-active-label] h1');
+        const activeTarget = shell.querySelector('[data-active-target]');
+
+        const setScope = (scope) => {
+            secondaryGroups.forEach((group) => {
+                const shouldShow = group.dataset.scope === scope;
+                group.toggleAttribute('hidden', !shouldShow);
+                if (shouldShow) {
+                    const firstButton = group.querySelector('[data-section-target]');
+                    if (firstButton) {
+                        firstButton.click();
+                    }
+                }
+            });
+        };
+
+        const setActiveSection = (section) => {
+            contentSections.forEach((panel) => {
+                panel.toggleAttribute('hidden', panel.dataset.section !== section);
+            });
+            sectionButtons.forEach((btn) => {
+                const isActive = btn.dataset.sectionTarget === section;
+                btn.classList.toggle('is-active', isActive);
+                btn.setAttribute('aria-pressed', isActive);
+            });
+            if (activeLabel) {
+                activeLabel.textContent = `#${section}`;
+            }
+            if (activeTarget) {
+                activeTarget.textContent = `#${section}`;
+            }
+            history.replaceState(null, '', `#${section}`);
+        };
+
+        primaryButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                primaryButtons.forEach((item) => {
+                    const isActive = item === button;
+                    item.classList.toggle('is-active', isActive);
+                    item.setAttribute('aria-pressed', isActive);
+                });
+                setScope(button.dataset.rail);
+            });
+        });
+
+        sectionButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                setActiveSection(button.dataset.sectionTarget);
+            });
+        });
+
+        const initialHash = window.location.hash.replace('#', '');
+        const initialSection = initialHash || 'general';
+        const initialScope = Array.from(secondaryGroups).find((group) => {
+            return Array.from(group.querySelectorAll('[data-section-target]')).some((btn) => btn.dataset.sectionTarget === initialSection);
+        });
+
+        if (initialScope) {
+            const scopeName = initialScope.dataset.scope;
+            primaryButtons.forEach((button) => {
+                const isActive = button.dataset.rail === scopeName;
+                button.classList.toggle('is-active', isActive);
+                button.setAttribute('aria-pressed', isActive);
+            });
+            setScope(scopeName);
+            setActiveSection(initialSection);
+        } else {
+            primaryButtons[0]?.click();
+        }
+    });
+</script>
+{% endblock %}
