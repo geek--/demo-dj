@@ -2,12 +2,14 @@
 
 from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.generic import TemplateView
 from django.views.decorators.cache import never_cache
 
 from .forms import StyledAuthenticationForm, UserRegistrationForm
@@ -19,6 +21,12 @@ class UserLoginView(LoginView):
     template_name = "registration/login.html"
     redirect_authenticated_user = True
     form_class = StyledAuthenticationForm
+
+    def get_success_url(self) -> str:
+        redirect_to = self.get_redirect_url()
+        if redirect_to:
+            return redirect_to
+        return str(reverse_lazy("accounts:profile"))
 
 
 @method_decorator(never_cache, name="dispatch")
@@ -47,7 +55,7 @@ class RegisterView(View):
 
     form_class = UserRegistrationForm
     template_name = "accounts/register.html"
-    success_url = reverse_lazy("home")
+    success_url = reverse_lazy("accounts:profile")
 
     def get(self, request: HttpRequest) -> HttpResponse:
         form = self.form_class()
@@ -62,3 +70,9 @@ class RegisterView(View):
             return redirect(self.success_url)
 
         return render(request, self.template_name, {"form": form})
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    """Render the authenticated profile dashboard."""
+
+    template_name = "accounts/profile.html"

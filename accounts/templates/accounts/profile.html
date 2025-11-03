@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil | Demo Django{% endblock %}
+
+{% block body_class %}layout-profile{% endblock %}
+{% block header %}{% endblock %}
+{% block main_class %}profile-main{% endblock %}
+
+{% block extra_head %}
+<style>
+    body.layout-profile {
+        min-height: 100vh;
+    }
+
+    main.profile-main {
+        min-height: 100vh;
+        padding: clamp(1.5rem, 4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .profile-shell {
+        --sidebar-width: clamp(15rem, 24vw, 18.5rem);
+        --sidebar-collapsed-width: 4.75rem;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .profile-sidebar {
+        display: grid;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        border-radius: 1.35rem;
+        background: linear-gradient(160deg, rgba(15, 23, 42, 0.92), rgba(30, 64, 175, 0.85));
+        color: #e2e8f0;
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.35);
+    }
+
+    .profile-sidebar header {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .profile-sidebar .app-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 1.05rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .profile-sidebar .user-card {
+        display: grid;
+        gap: 0.35rem;
+        font-size: 0.95rem;
+        color: rgba(226, 232, 240, 0.88);
+    }
+
+    .sidebar-toggle {
+        justify-self: start;
+        border: none;
+        border-radius: 999px;
+        padding: 0.55rem 0.95rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        color: #0f172a;
+        background: linear-gradient(135deg, #fbbf24, #f97316);
+        box-shadow: 0 12px 24px rgba(249, 115, 22, 0.4);
+    }
+
+    .sidebar-toggle svg {
+        width: 1.1rem;
+        height: 1.1rem;
+    }
+
+    .sidebar-nav {
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .sidebar-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        width: 100%;
+        padding: 0.65rem 0.9rem;
+        border-radius: 0.85rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-align: left;
+        border: none;
+        background: transparent;
+        color: rgba(226, 232, 240, 0.85);
+        cursor: pointer;
+        transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    .sidebar-link .nav-icon {
+        width: 1.6rem;
+        height: 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .sidebar-link .nav-label {
+        white-space: nowrap;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link:focus-visible {
+        background: rgba(255, 255, 255, 0.12);
+        color: #f8fafc;
+        outline: none;
+    }
+
+    .sidebar-link.is-active {
+        background: rgba(248, 250, 252, 0.16);
+        color: #f8fafc;
+        transform: translateX(2px);
+    }
+
+    .sidebar-link.logout-link {
+        margin-top: 0.75rem;
+        background: rgba(239, 68, 68, 0.18);
+        color: #fee2e2;
+        text-decoration: none;
+    }
+
+    .sidebar-link.logout-link:hover,
+    .sidebar-link.logout-link:focus-visible {
+        background: rgba(239, 68, 68, 0.28);
+        color: #fff5f5;
+    }
+
+    .profile-content {
+        display: grid;
+        gap: 1.5rem;
+        padding: clamp(1.5rem, 4vw, 2.5rem);
+        border-radius: 1.5rem;
+        background: var(--surface-0);
+        box-shadow: 0 30px 60px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .profile-header {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .profile-header h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 1.2rem + 1vw, 2rem);
+    }
+
+    .profile-header span {
+        color: var(--text-muted);
+    }
+
+    .profile-section[hidden] {
+        display: none;
+    }
+
+    .profile-section {
+        display: grid;
+        gap: 1.25rem;
+    }
+
+    .stat-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .stat-card {
+        display: grid;
+        gap: 0.4rem;
+        padding: 1.2rem;
+        border-radius: 1rem;
+        background: var(--surface-25);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .stat-card strong {
+        font-size: 1.6rem;
+    }
+
+    .text-muted {
+        color: var(--text-muted);
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .info-item {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    .info-item span:first-child {
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+    }
+
+    .info-item span:last-child {
+        font-size: 1.05rem;
+        font-weight: 600;
+    }
+
+    .news-card {
+        display: grid;
+        gap: 0.5rem;
+        padding: 1.35rem;
+        border-radius: 1rem;
+        background: radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.08), transparent 60%), var(--surface-0);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+    }
+
+    .news-card h3 {
+        margin: 0;
+    }
+
+    .news-card p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    @media (min-width: 62rem) {
+        .profile-shell {
+            grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
+        }
+
+        .profile-shell.is-collapsed {
+            grid-template-columns: var(--sidebar-collapsed-width) minmax(0, 1fr);
+        }
+
+        .stat-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .profile-shell.is-collapsed .nav-label,
+    .profile-shell.is-collapsed .sidebar-toggle-label,
+    .profile-shell.is-collapsed .user-card {
+        display: none;
+    }
+
+    .profile-shell.is-collapsed .profile-sidebar {
+        align-items: center;
+        justify-items: center;
+    }
+
+    .profile-shell.is-collapsed .sidebar-toggle {
+        justify-content: center;
+        padding-inline: 0.65rem;
+    }
+
+    .profile-shell.is-collapsed .sidebar-link {
+        justify-content: center;
+        padding-inline: 0.65rem;
+    }
+
+    .profile-shell.is-collapsed .sidebar-link.logout-link {
+        margin-inline: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-shell" data-profile-shell>
+    <aside class="profile-sidebar">
+        <header>
+            <span class="app-brand">Natu Peru Seeds</span>
+            <div class="user-card">
+                <strong>{{ user.get_full_name|default:user.username }}</strong>
+                <span>{{ user.email|default:"Sin correo" }}</span>
+            </div>
+        </header>
+        <button type="button" class="sidebar-toggle" data-action="toggle-sidebar" aria-expanded="true">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+            </svg>
+            <span class="sidebar-toggle-label">Contraer menú</span>
+        </button>
+        <nav class="sidebar-nav" aria-label="Secciones del perfil">
+            <button type="button" class="sidebar-link is-active" data-target="panel-resumen">
+                <span class="nav-icon" aria-hidden="true">🏠</span>
+                <span class="nav-label">Resumen</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="panel-datos">
+                <span class="nav-icon" aria-hidden="true">👤</span>
+                <span class="nav-label">Datos personales</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="panel-novedades">
+                <span class="nav-icon" aria-hidden="true">📰</span>
+                <span class="nav-label">Novedades</span>
+            </button>
+            <a class="sidebar-link logout-link" href="{% url 'logout' %}">
+                <span class="nav-icon" aria-hidden="true">🚪</span>
+                <span class="nav-label">Cerrar sesión</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="profile-content">
+        <div class="profile-header">
+            <h1>Panel personal</h1>
+            <span>Gestiona tu información y accede a los módulos internos.</span>
+        </div>
+        <section class="profile-section" id="panel-resumen" data-section>
+            <div class="stat-grid">
+                <article class="stat-card">
+                    <span>Proyectos activos</span>
+                    <strong>03</strong>
+                    <small class="text-muted">Asignados a tu equipo</small>
+                </article>
+                <article class="stat-card">
+                    <span>Integraciones</span>
+                    <strong>05</strong>
+                    <small class="text-muted">APIs vinculadas</small>
+                </article>
+                <article class="stat-card">
+                    <span>Alertas</span>
+                    <strong>01</strong>
+                    <small class="text-muted">Pendiente de revisión</small>
+                </article>
+            </div>
+        </section>
+        <section class="profile-section" id="panel-datos" data-section hidden>
+            <div class="info-grid">
+                <div class="info-item">
+                    <span>Usuario</span>
+                    <span>{{ user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <span>Nombre completo</span>
+                    <span>{{ user.get_full_name|default:"Completa tu perfil" }}</span>
+                </div>
+                <div class="info-item">
+                    <span>Correo electrónico</span>
+                    <span>{{ user.email|default:"Pendiente" }}</span>
+                </div>
+            </div>
+        </section>
+        <section class="profile-section" id="panel-novedades" data-section hidden>
+            <article class="news-card">
+                <h3>Próximas funcionalidades</h3>
+                <p>
+                    Este espacio mostrará reportes de cultivos, seguimiento de equipos de campo y otros widgets
+                    interactivos cuando el proyecto evolucione. Utiliza esta estructura para añadir módulos sin
+                    comprometer la experiencia móvil.
+                </p>
+            </article>
+        </section>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+    (function () {
+        const shell = document.querySelector('[data-profile-shell]');
+        if (!shell) {
+            return;
+        }
+
+        const toggleButton = shell.querySelector('[data-action="toggle-sidebar"]');
+        const sectionButtons = Array.from(shell.querySelectorAll('[data-target]'));
+        const sections = Array.from(shell.querySelectorAll('[data-section]'));
+
+        const setActiveSection = (sectionId) => {
+            sections.forEach((section) => {
+                const shouldShow = section.id === sectionId;
+                section.toggleAttribute('hidden', !shouldShow);
+            });
+
+            sectionButtons.forEach((button) => {
+                button.classList.toggle('is-active', button.dataset.target === sectionId);
+            });
+        };
+
+        const handleHash = () => {
+            const targetFromHash = window.location.hash.replace('#', '');
+            const defaultSection = sections[0]?.id;
+            const targetId = sections.some((section) => section.id === targetFromHash) ? targetFromHash : defaultSection;
+            if (!targetId) {
+                return;
+            }
+
+            setActiveSection(targetId);
+        };
+
+        sectionButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const sectionId = button.dataset.target;
+                setActiveSection(sectionId);
+                if (history.replaceState) {
+                    history.replaceState(null, '', `#${sectionId}`);
+                } else {
+                    window.location.hash = sectionId;
+                }
+            });
+        });
+
+        if (toggleButton) {
+            toggleButton.addEventListener('click', () => {
+                const collapsed = shell.classList.toggle('is-collapsed');
+                toggleButton.setAttribute('aria-expanded', String(!collapsed));
+                const label = toggleButton.querySelector('.sidebar-toggle-label');
+                if (label) {
+                    label.textContent = collapsed ? 'Expandir menú' : 'Contraer menú';
+                }
+            });
+        }
+
+        handleHash();
+        window.addEventListener('hashchange', handleHash);
+    })();
+</script>
+{% endblock %}
