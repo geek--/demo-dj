@@ -23,6 +23,7 @@ class UserLogoutView(LogoutView):
     """Handle user logout for both GET and POST requests."""
 
     next_page = reverse_lazy("login")
+    template_name = "registration/logged_out.html"
     http_method_names = ["get", "post", "options", "head"]
 
     def _add_logout_message(self, request: HttpRequest) -> None:
