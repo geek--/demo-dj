@@ -1,0 +1,918 @@
+{% extends "base.html" %}
+
+{% block title %}Perfil | Demo Django{% endblock %}
+
+{% block body_class %}layout-profile{% endblock %}
+{% block header %}{% endblock %}
+{% block main_class %}profile-main{% endblock %}
+
+{% block extra_head %}
+<style>
+    body.layout-profile {
+        background: radial-gradient(circle at top left, rgba(79, 70, 229, 0.15), transparent 55%),
+            radial-gradient(circle at bottom right, rgba(14, 165, 233, 0.15), transparent 60%),
+            #f8fafc;
+        min-height: 100vh;
+    }
+
+    main.profile-main {
+        min-height: 100vh;
+        padding: clamp(1.25rem, 4vw, 3rem);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.25rem, 4vw, 2rem);
+    }
+
+    .profile-shell {
+        --sidebar-expanded: clamp(14.5rem, 22vw, 18.5rem);
+        --sidebar-collapsed: 4.5rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.1rem, 3vw, 1.75rem);
+    }
+
+    .profile-shell::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.55);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.25s ease;
+        z-index: 19;
+    }
+
+    .profile-shell.is-drawer-open::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .profile-sidebar {
+        position: fixed;
+        inset: clamp(1rem, 4vw, 1.5rem) clamp(1rem, 5vw, 1.5rem) auto;
+        width: min(22rem, calc(100vw - clamp(2.5rem, 10vw, 3rem)));
+        max-height: calc(100vh - clamp(2.5rem, 8vw, 3rem));
+        overflow-y: auto;
+        display: grid;
+        gap: clamp(1.1rem, 3vw, 1.6rem);
+        padding: clamp(1.1rem, 3vw, 1.6rem);
+        border-radius: clamp(1rem, 2vw, 1.5rem);
+        background: linear-gradient(210deg, #4c1d95 0%, #2e1065 55%, #0f172a 100%);
+        color: #f8fafc;
+        box-shadow: 0 30px 70px rgba(15, 23, 42, 0.45);
+        transform: translateY(-120%);
+        transition: transform 0.28s ease;
+        z-index: 20;
+    }
+
+    .profile-shell.is-drawer-open .profile-sidebar {
+        transform: translateY(0);
+    }
+
+    .sidebar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+    }
+
+    .brand-mark {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .brand-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 1rem;
+        display: grid;
+        place-items: center;
+        background: rgba(248, 250, 252, 0.18);
+        font-size: 1.35rem;
+    }
+
+    .brand-text {
+        display: grid;
+        gap: 0.2rem;
+        line-height: 1.1;
+    }
+
+    .brand-text span:last-child {
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        color: rgba(226, 232, 240, 0.65);
+    }
+
+    .sidebar-collapse {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 0.85rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        background: rgba(15, 23, 42, 0.18);
+        color: #f8fafc;
+        cursor: pointer;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .sidebar-collapse:hover,
+    .sidebar-collapse:focus-visible {
+        background: rgba(15, 23, 42, 0.32);
+        outline: none;
+    }
+
+    .sidebar-collapse svg {
+        width: 1.2rem;
+        height: 1.2rem;
+    }
+
+    .sidebar-user {
+        display: grid;
+        gap: 0.25rem;
+        color: rgba(226, 232, 240, 0.85);
+    }
+
+    .sidebar-user__label {
+        text-transform: uppercase;
+        font-size: 0.68rem;
+        letter-spacing: 0.16em;
+        color: rgba(226, 232, 240, 0.6);
+    }
+
+    .sidebar-user__name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: #f8fafc;
+    }
+
+    .sidebar-nav {
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    .sidebar-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.85rem;
+        border-radius: 0.9rem;
+        border: none;
+        background: transparent;
+        color: rgba(226, 232, 240, 0.8);
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-align: left;
+        cursor: pointer;
+        transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    .sidebar-link:hover,
+    .sidebar-link:focus-visible {
+        background: rgba(15, 23, 42, 0.28);
+        color: #f8fafc;
+        outline: none;
+    }
+
+    .sidebar-link.is-active {
+        background: rgba(248, 250, 252, 0.16);
+        color: #f8fafc;
+        transform: translateX(2px);
+    }
+
+    .sidebar-link .nav-icon {
+        width: 1.55rem;
+        height: 1.55rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+    }
+
+    .sidebar-link.logout-link {
+        margin-top: 0.75rem;
+        background: rgba(239, 68, 68, 0.18);
+        color: #fee2e2;
+        text-decoration: none;
+    }
+
+    .sidebar-link.logout-link:hover,
+    .sidebar-link.logout-link:focus-visible {
+        background: rgba(239, 68, 68, 0.28);
+        color: #fff5f5;
+    }
+
+    .sidebar-footer {
+        margin-top: auto;
+        display: grid;
+        gap: 0.25rem;
+        font-size: 0.8rem;
+        color: rgba(226, 232, 240, 0.65);
+    }
+
+    .sidebar-footer strong {
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(248, 250, 252, 0.78);
+    }
+
+    .profile-stage {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(1.1rem, 3vw, 1.6rem);
+    }
+
+    .profile-topbar {
+        display: grid;
+        gap: 0.75rem;
+        grid-template-columns: auto;
+        align-items: center;
+        padding: clamp(1rem, 3vw, 1.5rem);
+        border-radius: clamp(1rem, 2vw, 1.35rem);
+        background: var(--surface-0);
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+    }
+
+    .topbar-toggle {
+        border: none;
+        border-radius: 0.85rem;
+        width: 2.65rem;
+        height: 2.65rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.45));
+        color: #1e3a8a;
+        box-shadow: 0 15px 35px rgba(59, 130, 246, 0.28);
+        cursor: pointer;
+    }
+
+    .topbar-toggle svg {
+        width: 1.35rem;
+        height: 1.35rem;
+    }
+
+    .topbar-intro {
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    .topbar-intro h1 {
+        margin: 0;
+        font-size: clamp(1.45rem, 1.2rem + 1vw, 2rem);
+    }
+
+    .topbar-intro p {
+        margin: 0;
+        color: var(--text-muted);
+        max-width: 40ch;
+    }
+
+    .topbar-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        justify-content: flex-start;
+    }
+
+    .status-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.35rem 0.65rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: rgba(16, 185, 129, 0.16);
+        color: #047857;
+    }
+
+    .status-indicator::before {
+        content: "";
+        width: 0.6rem;
+        height: 0.6rem;
+        border-radius: 50%;
+        background: #10b981;
+        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.18);
+    }
+
+    .profile-stage-grid {
+        display: grid;
+        gap: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .profile-panel,
+    .profile-stream {
+        border-radius: clamp(1rem, 2vw, 1.35rem);
+        padding: clamp(1.2rem, 3vw, 1.8rem);
+        background: var(--surface-0);
+        box-shadow: 0 24px 55px rgba(15, 23, 42, 0.1);
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        display: grid;
+        gap: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .profile-section[hidden] {
+        display: none;
+    }
+
+    .profile-section {
+        display: grid;
+        gap: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .section-heading {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 0.5rem;
+    }
+
+    .section-heading h2 {
+        margin: 0;
+        font-size: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
+    }
+
+    .section-heading span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .stat-grid {
+        display: grid;
+        gap: 0.85rem;
+    }
+
+    .stat-card {
+        border-radius: 1rem;
+        padding: clamp(1rem, 2.5vw, 1.35rem);
+        background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(59, 130, 246, 0.05));
+        border: 1px solid rgba(79, 70, 229, 0.12);
+        display: grid;
+        gap: 0.65rem;
+    }
+
+    .stat-card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+    }
+
+    .stat-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        border-radius: 999px;
+        padding: 0.15rem 0.5rem;
+        background: rgba(59, 130, 246, 0.18);
+        color: #1d4ed8;
+        font-size: 0.7rem;
+        font-weight: 700;
+    }
+
+    .stat-value {
+        font-size: clamp(1.7rem, 1.3rem + 1vw, 2.1rem);
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    .stat-footnote {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 0.85rem;
+    }
+
+    .info-card {
+        border-radius: 0.95rem;
+        padding: clamp(1rem, 2.5vw, 1.25rem);
+        background: linear-gradient(135deg, rgba(236, 72, 153, 0.08), rgba(244, 114, 182, 0.04));
+        border: 1px solid rgba(236, 72, 153, 0.12);
+        display: grid;
+        gap: 0.35rem;
+    }
+
+    .info-card span:first-child {
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: rgba(131, 24, 67, 0.65);
+    }
+
+    .info-card span:last-child {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .timeline {
+        display: grid;
+        gap: 1.1rem;
+        position: relative;
+        padding-left: 1.25rem;
+    }
+
+    .timeline::before {
+        content: "";
+        position: absolute;
+        top: 0.35rem;
+        bottom: 0.35rem;
+        left: 0.4rem;
+        width: 2px;
+        background: linear-gradient(to bottom, rgba(79, 70, 229, 0.35), rgba(59, 130, 246, 0.35));
+    }
+
+    .timeline-item {
+        display: grid;
+        gap: 0.4rem;
+        background: linear-gradient(135deg, rgba(20, 184, 166, 0.12), rgba(45, 212, 191, 0.05));
+        border-radius: 0.9rem;
+        padding: 0.9rem 1rem 0.9rem 1.4rem;
+        position: relative;
+        border: 1px solid rgba(20, 184, 166, 0.16);
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        width: 0.65rem;
+        height: 0.65rem;
+        left: -1.08rem;
+        top: 1.1rem;
+        border-radius: 50%;
+        background: #14b8a6;
+        box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.18);
+    }
+
+    .timeline-item h3 {
+        margin: 0;
+        font-size: 1.05rem;
+    }
+
+    .timeline-item p {
+        margin: 0;
+        color: var(--text-muted);
+    }
+
+    .profile-stream h2 {
+        margin: 0;
+        font-size: clamp(1.1rem, 1rem + 0.5vw, 1.35rem);
+    }
+
+    .stream-list {
+        display: grid;
+        gap: 0.9rem;
+    }
+
+    .stream-card {
+        display: grid;
+        gap: 0.45rem;
+        padding: 0.9rem 1rem;
+        border-radius: 0.95rem;
+        border: 1px solid rgba(148, 163, 184, 0.18);
+        background: linear-gradient(135deg, rgba(15, 23, 42, 0.04), rgba(59, 130, 246, 0.06));
+    }
+
+    .stream-card header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        font-weight: 600;
+    }
+
+    .stream-card p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .stream-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.2rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .stream-status.is-success {
+        background: rgba(16, 185, 129, 0.16);
+        color: #047857;
+    }
+
+    .stream-status.is-warning {
+        background: rgba(251, 191, 36, 0.2);
+        color: #92400e;
+    }
+
+    .stream-status.is-info {
+        background: rgba(59, 130, 246, 0.18);
+        color: #1d4ed8;
+    }
+
+    .stream-cta {
+        border-radius: 1rem;
+        padding: 1.1rem 1.25rem;
+        background: linear-gradient(135deg, rgba(30, 64, 175, 0.18), rgba(30, 64, 175, 0.32));
+        color: #e0e7ff;
+        display: grid;
+        gap: 0.5rem;
+    }
+
+    .stream-cta strong {
+        font-size: 1rem;
+    }
+
+    .stream-cta a {
+        justify-self: start;
+        color: #f8fafc;
+        font-weight: 600;
+    }
+
+    @media (min-width: 48rem) {
+        .profile-topbar {
+            grid-template-columns: auto 1fr auto;
+        }
+
+        .stat-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .info-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 64rem) {
+        .profile-shell {
+            display: grid;
+            grid-template-columns: var(--sidebar-expanded) minmax(0, 1fr);
+            align-items: stretch;
+        }
+
+        .profile-shell::before {
+            display: none;
+        }
+
+        .profile-sidebar {
+            position: sticky;
+            top: clamp(1.25rem, 4vw, 2rem);
+            align-self: start;
+            transform: none !important;
+            inset: auto;
+            width: 100%;
+            max-height: calc(100vh - clamp(2.5rem, 8vw, 3rem));
+        }
+
+        .sidebar-collapse {
+            display: inline-flex;
+        }
+
+        .topbar-toggle {
+            display: none;
+        }
+
+        .profile-shell.is-collapsed {
+            grid-template-columns: var(--sidebar-collapsed) minmax(0, 1fr);
+        }
+
+        .profile-shell.is-collapsed .sidebar-label,
+        .profile-shell.is-collapsed .sidebar-user,
+        .profile-shell.is-collapsed .sidebar-footer,
+        .profile-shell.is-collapsed .brand-text span:last-child {
+            display: none;
+        }
+
+        .profile-shell.is-collapsed .brand-mark {
+            justify-content: center;
+        }
+
+        .profile-shell.is-collapsed .sidebar-link {
+            justify-content: center;
+            padding-inline: 0.55rem;
+        }
+
+        .profile-shell.is-collapsed .sidebar-link.logout-link {
+            margin-inline: auto;
+        }
+
+        .profile-shell.is-collapsed .sidebar-collapse {
+            transform: rotate(180deg);
+        }
+    }
+
+    @media (min-width: 72rem) {
+        .profile-stage-grid {
+            grid-template-columns: minmax(0, 1fr) clamp(15rem, 28vw, 22rem);
+            align-items: start;
+        }
+
+        .stat-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (min-width: 80rem) {
+        .info-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="profile-shell" data-profile-shell>
+    <aside class="profile-sidebar" data-sidebar>
+        <div class="sidebar-head">
+            <div class="brand-mark">
+                <span class="brand-icon" aria-hidden="true">🌿</span>
+                <div class="brand-text">
+                    <span>Natu Peru Seeds</span>
+                    <span>Equipo interno</span>
+                </div>
+            </div>
+            <button type="button" class="sidebar-collapse" data-action="collapse-sidebar" aria-expanded="true" aria-label="Contraer navegación">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                </svg>
+            </button>
+        </div>
+        <div class="sidebar-user">
+            <span class="sidebar-user__label">Conectado como</span>
+            <strong class="sidebar-user__name">{{ user.get_full_name|default:user.username }}</strong>
+            <span class="sidebar-user__meta">{{ user.email|default:"Sin correo" }}</span>
+        </div>
+        <nav class="sidebar-nav" aria-label="Secciones del perfil">
+            <button type="button" class="sidebar-link is-active" data-target="panel-resumen">
+                <span class="nav-icon" aria-hidden="true">🏠</span>
+                <span class="sidebar-label">Resumen</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="panel-datos">
+                <span class="nav-icon" aria-hidden="true">👤</span>
+                <span class="sidebar-label">Datos personales</span>
+            </button>
+            <button type="button" class="sidebar-link" data-target="panel-novedades">
+                <span class="nav-icon" aria-hidden="true">📰</span>
+                <span class="sidebar-label">Novedades</span>
+            </button>
+            <a class="sidebar-link logout-link" href="{% url 'logout' %}">
+                <span class="nav-icon" aria-hidden="true">🚪</span>
+                <span class="sidebar-label">Cerrar sesión</span>
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <strong>Plan profesional</strong>
+            <span>Última sincronización: hace 12 min</span>
+            <span>Base: PostgreSQL — Región Lima</span>
+        </div>
+    </aside>
+    <div class="profile-stage">
+        <header class="profile-topbar">
+            <button type="button" class="topbar-toggle" data-action="drawer-sidebar" aria-expanded="false" aria-label="Abrir navegación">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+                </svg>
+            </button>
+            <div class="topbar-intro">
+                <h1>Panel personal</h1>
+                <p>Gestiona tu información, accede a los módulos internos y consulta actualizaciones del proyecto.</p>
+            </div>
+            <div class="topbar-meta">
+                <span class="status-indicator">Activo</span>
+            </div>
+        </header>
+        <div class="profile-stage-grid">
+            <div class="profile-panel">
+                <section class="profile-section" id="panel-resumen" data-section>
+                    <div class="section-heading">
+                        <h2>Resumen general</h2>
+                        <span>Tus indicadores clave al día</span>
+                    </div>
+                    <div class="stat-grid">
+                        <article class="stat-card">
+                            <header>
+                                <span>Proyectos activos</span>
+                                <span class="stat-chip">+2 esta semana</span>
+                            </header>
+                            <span class="stat-value">03</span>
+                            <span class="stat-footnote">Asignados a tu equipo de campo</span>
+                        </article>
+                        <article class="stat-card">
+                            <header>
+                                <span>Integraciones</span>
+                                <span class="stat-chip">API</span>
+                            </header>
+                            <span class="stat-value">05</span>
+                            <span class="stat-footnote">Servicios conectados al ecosistema</span>
+                        </article>
+                        <article class="stat-card">
+                            <header>
+                                <span>Alertas</span>
+                                <span class="stat-chip">1 nueva</span>
+                            </header>
+                            <span class="stat-value">01</span>
+                            <span class="stat-footnote">Pendiente de revisión técnica</span>
+                        </article>
+                    </div>
+                </section>
+                <section class="profile-section" id="panel-datos" data-section hidden>
+                    <div class="section-heading">
+                        <h2>Datos personales</h2>
+                        <span>Información básica del perfil</span>
+                    </div>
+                    <div class="info-grid">
+                        <article class="info-card">
+                            <span>Usuario</span>
+                            <span>{{ user.username }}</span>
+                        </article>
+                        <article class="info-card">
+                            <span>Nombre completo</span>
+                            <span>{{ user.get_full_name|default:"Completa tu perfil" }}</span>
+                        </article>
+                        <article class="info-card">
+                            <span>Correo electrónico</span>
+                            <span>{{ user.email|default:"Pendiente" }}</span>
+                        </article>
+                        <article class="info-card">
+                            <span>Rol asignado</span>
+                            <span>Colaborador agrícola</span>
+                        </article>
+                        <article class="info-card">
+                            <span>Zona de cobertura</span>
+                            <span>Región norte - Lote 21B</span>
+                        </article>
+                        <article class="info-card">
+                            <span>Último acceso</span>
+                            <span>{% now "d \d\e F, H:i" %}</span>
+                        </article>
+                    </div>
+                </section>
+                <section class="profile-section" id="panel-novedades" data-section hidden>
+                    <div class="section-heading">
+                        <h2>Novedades del proyecto</h2>
+                        <span>Próximos hitos y mejoras</span>
+                    </div>
+                    <div class="timeline">
+                        <article class="timeline-item">
+                            <h3>Reportes de cultivo inteligentes</h3>
+                            <p>Pronto visualizarás métricas de rendimiento, humedad y alertas climáticas centralizadas en este panel.</p>
+                        </article>
+                        <article class="timeline-item">
+                            <h3>Módulo de equipos de campo</h3>
+                            <p>Gestiona las rutas, asignaciones y bitácoras de cada cuadrilla directamente desde el dashboard.</p>
+                        </article>
+                        <article class="timeline-item">
+                            <h3>Integraciones con sensores IoT</h3>
+                            <p>Sincroniza lecturas en tiempo real para decisiones más rápidas y notificaciones inteligentes.</p>
+                        </article>
+                    </div>
+                </section>
+            </div>
+            <aside class="profile-stream">
+                <h2>Actividad reciente</h2>
+                <div class="stream-list">
+                    <article class="stream-card">
+                        <header>
+                            <span>Sincronización con API de clima</span>
+                            <span class="stream-status is-success">Operativo</span>
+                        </header>
+                        <p>Los datos meteorológicos fueron actualizados hace 5 minutos para los lotes registrados.</p>
+                    </article>
+                    <article class="stream-card">
+                        <header>
+                            <span>Revisión de alertas</span>
+                            <span class="stream-status is-warning">Atención</span>
+                        </header>
+                        <p>Una alerta de riego pendiente requiere confirmación para el Lote 7 en Chiclayo.</p>
+                    </article>
+                    <article class="stream-card">
+                        <header>
+                            <span>Nuevos colaboradores</span>
+                            <span class="stream-status is-info">Equipo</span>
+                        </header>
+                        <p>Se agregaron 3 técnicos de campo al programa de capacitación semanal.</p>
+                    </article>
+                </div>
+                <div class="stream-cta">
+                    <strong>¿Necesitas ayuda?</strong>
+                    <span>Coordina con soporte para habilitar más módulos o automatizar reportes.</span>
+                    <a href="#" role="button">Contactar soporte</a>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_body %}
+<script>
+    (function () {
+        const shell = document.querySelector('[data-profile-shell]');
+        if (!shell) {
+            return;
+        }
+
+        const collapseButton = shell.querySelector('[data-action="collapse-sidebar"]');
+        const drawerButton = shell.querySelector('[data-action="drawer-sidebar"]');
+        const sectionButtons = Array.from(shell.querySelectorAll('[data-target]'));
+        const sections = Array.from(shell.querySelectorAll('[data-section]'));
+
+        const setActiveSection = (sectionId) => {
+            sections.forEach((section) => {
+                const shouldShow = section.id === sectionId;
+                section.toggleAttribute('hidden', !shouldShow);
+            });
+
+            sectionButtons.forEach((button) => {
+                button.classList.toggle('is-active', button.dataset.target === sectionId);
+            });
+        };
+
+        const handleHash = () => {
+            const targetFromHash = window.location.hash.replace('#', '');
+            const defaultSection = sections[0]?.id;
+            const targetId = sections.some((section) => section.id === targetFromHash) ? targetFromHash : defaultSection;
+            if (!targetId) {
+                return;
+            }
+
+            setActiveSection(targetId);
+        };
+
+        sectionButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                const sectionId = button.dataset.target;
+                setActiveSection(sectionId);
+                if (history.replaceState) {
+                    history.replaceState(null, '', `#${sectionId}`);
+                } else {
+                    window.location.hash = sectionId;
+                }
+                shell.classList.remove('is-drawer-open');
+                if (drawerButton) {
+                    drawerButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+        });
+
+        if (collapseButton) {
+            collapseButton.addEventListener('click', () => {
+                const collapsed = shell.classList.toggle('is-collapsed');
+                collapseButton.setAttribute('aria-expanded', String(!collapsed));
+                collapseButton.setAttribute('aria-label', collapsed ? 'Expandir navegación' : 'Contraer navegación');
+            });
+        }
+
+        if (drawerButton) {
+            drawerButton.addEventListener('click', () => {
+                const isOpen = shell.classList.toggle('is-drawer-open');
+                drawerButton.setAttribute('aria-expanded', String(isOpen));
+            });
+
+            shell.addEventListener('click', (event) => {
+                if (!shell.classList.contains('is-drawer-open')) {
+                    return;
+                }
+
+                const sidebar = shell.querySelector('[data-sidebar]');
+                if (!sidebar) {
+                    return;
+                }
+
+                if (!sidebar.contains(event.target) && event.target !== drawerButton) {
+                    shell.classList.remove('is-drawer-open');
+                    drawerButton.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        handleHash();
+        window.addEventListener('hashchange', handleHash);
+    })();
+</script>
+{% endblock %}
