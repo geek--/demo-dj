@@ -100,7 +100,92 @@
             box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
         }
 
-        .profile-area {
+        .profile-dashboard {
+            --sidebar-width: clamp(13rem, 28vw, 17rem);
+            --sidebar-collapsed-width: 4.25rem;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr);
+            gap: var(--gap-md);
+        }
+
+        .profile-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            padding: 1rem;
+            border-radius: calc(var(--radius-lg) - 0.25rem);
+            background: linear-gradient(160deg, rgba(37, 99, 235, 0.08), rgba(15, 23, 42, 0.05));
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .sidebar-toggle {
+            align-self: flex-start;
+            border: none;
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--surface-900);
+            padding: 0.5rem 0.85rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .sidebar-toggle:hover,
+        .sidebar-toggle:focus-visible {
+            background: rgba(37, 99, 235, 0.2);
+        }
+
+        .sidebar-toggle svg {
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+
+        .sidebar-nav {
+            display: grid;
+            gap: 0.4rem;
+        }
+
+        .sidebar-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            padding: 0.65rem 0.85rem;
+            border-radius: 0.75rem;
+            color: var(--surface-700);
+            text-decoration: none;
+            font-weight: 600;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link:focus-visible {
+            background: rgba(37, 99, 235, 0.12);
+            color: var(--surface-900);
+        }
+
+        .sidebar-link.is-active {
+            background: rgba(37, 99, 235, 0.15);
+            color: var(--surface-900);
+        }
+
+        .sidebar-link .nav-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar-link .nav-label {
+            white-space: nowrap;
+        }
+
+        .profile-content {
             display: grid;
             gap: var(--gap-md);
         }
@@ -122,6 +207,31 @@
             color: var(--text-muted);
         }
 
+        .profile-dashboard.is-collapsed .nav-label {
+            display: none;
+        }
+
+        .profile-dashboard.is-collapsed .sidebar-link {
+            justify-content: center;
+            padding-inline: 0.5rem;
+        }
+
+        .profile-dashboard.is-collapsed .profile-sidebar {
+            align-items: center;
+        }
+
+        .profile-dashboard.is-collapsed .sidebar-nav {
+            justify-items: center;
+        }
+
+        .profile-dashboard.is-collapsed .sidebar-toggle-label {
+            display: none;
+        }
+
+        .profile-dashboard.is-collapsed .sidebar-toggle {
+            padding-inline: 0.6rem;
+        }
+
         @media (min-width: 48rem) {
             .site-header nav {
                 flex-direction: row;
@@ -131,9 +241,13 @@
         }
 
         @media (min-width: 56rem) {
-            .profile-area {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
+            .profile-dashboard {
+                grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
                 align-items: start;
+            }
+
+            .profile-dashboard.is-collapsed {
+                grid-template-columns: var(--sidebar-collapsed-width) minmax(0, 1fr);
             }
         }
     </style>
@@ -166,29 +280,97 @@
             </div>
         {% endif %}
         {% block content %}
-        <section class="page-section profile-area" id="perfil">
-            <div class="profile-card">
-                <h2>Bienvenido a la demo</h2>
-                <p class="profile-meta">Explora el flujo de autenticación, registra un usuario y administra la sesión desde la parte pública del sitio.</p>
-            </div>
-            <div class="profile-card">
-                {% if user.is_authenticated %}
-                    <h3>Tu perfil</h3>
+        <section class="page-section profile-dashboard" id="perfil">
+            <aside class="profile-sidebar">
+                <button type="button" class="sidebar-toggle" data-action="toggle-sidebar" aria-expanded="true">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5m-16.5 5.25h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                    <span class="sidebar-toggle-label">Menú</span>
+                </button>
+                <nav class="sidebar-nav" aria-label="Opciones del perfil">
+                    <a href="#perfil-resumen" class="sidebar-link is-active">
+                        <span class="nav-icon" aria-hidden="true">🏠</span>
+                        <span class="nav-label">Resumen</span>
+                    </a>
+                    <a href="#perfil-datos" class="sidebar-link">
+                        <span class="nav-icon" aria-hidden="true">👤</span>
+                        <span class="nav-label">Mis datos</span>
+                    </a>
+                    <a href="#perfil-noticias" class="sidebar-link">
+                        <span class="nav-icon" aria-hidden="true">📰</span>
+                        <span class="nav-label">Noticias</span>
+                    </a>
+                </nav>
+            </aside>
+            <div class="profile-content">
+                <article class="profile-card" id="perfil-resumen">
+                    <h2>Bienvenido a la demo</h2>
+                    <p class="profile-meta">Explora el flujo de autenticación, registra un usuario y administra la sesión desde la parte pública del sitio.</p>
+                </article>
+                <article class="profile-card" id="perfil-datos">
+                    {% if user.is_authenticated %}
+                        <h3>Tu perfil</h3>
+                        <div class="profile-meta">
+                            <span><strong>Usuario:</strong> {{ user.username }}</span>
+                            <span><strong>Nombre:</strong> {{ user.get_full_name|default:"Pendiente" }}</span>
+                            <span><strong>Correo:</strong> {{ user.email|default:"Sin definir" }}</span>
+                        </div>
+                    {% else %}
+                        <h3>Comienza a usar la aplicación</h3>
+                        <div class="profile-meta">
+                            <span>Inicia sesión para acceder a tu panel personal.</span>
+                            <span>¿Aún no tienes cuenta? <a href="{% url 'accounts:register' %}">Crea una cuenta</a> en segundos.</span>
+                        </div>
+                    {% endif %}
+                </article>
+                <article class="profile-card" id="perfil-noticias">
+                    <h3>Próximamente</h3>
                     <div class="profile-meta">
-                        <span><strong>Usuario:</strong> {{ user.username }}</span>
-                        <span><strong>Nombre:</strong> {{ user.get_full_name|default:"Pendiente" }}</span>
-                        <span><strong>Correo:</strong> {{ user.email|default:"Sin definir" }}</span>
+                        <span>Este espacio mostrará anuncios, novedades o widgets adicionales cuando el proyecto evolucione.</span>
+                        <span>Personaliza el contenido desde tus vistas para aprovechar la estructura responsiva.</span>
                     </div>
-                {% else %}
-                    <h3>Comienza a usar la aplicación</h3>
-                    <div class="profile-meta">
-                        <span>Inicia sesión para acceder a tu panel personal.</span>
-                        <span>¿Aún no tienes cuenta? <a href="{% url 'accounts:register' %}">Crea una cuenta</a> en segundos.</span>
-                    </div>
-                {% endif %}
+                </article>
             </div>
         </section>
         {% endblock %}
     </main>
+    <script>
+        (function () {
+            const dashboard = document.querySelector('.profile-dashboard');
+            const toggleButton = document.querySelector('[data-action="toggle-sidebar"]');
+            if (!dashboard || !toggleButton) {
+                return;
+            }
+
+            const labelNode = toggleButton.querySelector('.sidebar-toggle-label');
+            const navLinks = Array.from(dashboard.querySelectorAll('.sidebar-link'));
+
+            const setActiveLink = (hash) => {
+                const targetHash = hash || '#perfil-resumen';
+                navLinks.forEach((link) => {
+                    const linkHash = link.getAttribute('href');
+                    link.classList.toggle('is-active', linkHash === targetHash);
+                });
+            };
+
+            const updateState = (collapsed) => {
+                dashboard.classList.toggle('is-collapsed', collapsed);
+                toggleButton.setAttribute('aria-expanded', String(!collapsed));
+                if (labelNode) {
+                    labelNode.textContent = collapsed ? 'Abrir menú' : 'Cerrar menú';
+                }
+            };
+
+            toggleButton.addEventListener('click', () => {
+                const willCollapse = !dashboard.classList.contains('is-collapsed');
+                updateState(willCollapse);
+            });
+
+            window.addEventListener('hashchange', () => setActiveLink(window.location.hash));
+            setActiveLink(window.location.hash);
+            updateState(dashboard.classList.contains('is-collapsed'));
+        })();
+    </script>
 </body>
 </html>
