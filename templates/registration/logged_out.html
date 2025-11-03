@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}Sesión finalizada{% endblock %}
+
+{% block extra_head %}
+<style>
+    body.auth-body {
+        background: #f1f5f9;
+        background-image: url("https://images.unsplash.com/photo-1526401485004-46910ecc8e51?auto=format&fit=crop&w=1600&q=60");
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        display: flex;
+    }
+
+    main.auth-main {
+        flex: 1;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        padding: 2rem 1.5rem 3rem;
+        gap: 2.5rem;
+        background: rgba(30, 41, 59, 0.6);
+        backdrop-filter: blur(4px);
+    }
+
+    .auth-shell {
+        width: min(100%, 420px);
+        background: rgba(248, 250, 252, 0.98);
+        border-radius: 1.25rem;
+        padding: clamp(1.75rem, 5vw, 2.75rem);
+        display: grid;
+        gap: 1.5rem;
+        text-align: center;
+        box-shadow: 0 28px 55px rgba(15, 23, 42, 0.28);
+    }
+
+    .auth-shell h2 {
+        margin: 0;
+        font-size: 1.45rem;
+        color: #0f172a;
+    }
+
+    .auth-shell p {
+        margin: 0;
+        color: #475569;
+        line-height: 1.6;
+    }
+
+    .auth-actions {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 0.5rem;
+    }
+
+    .auth-actions a {
+        display: inline-block;
+        border-radius: 0.85rem;
+        padding: 0.9rem 1.25rem;
+        font-weight: 600;
+        text-decoration: none;
+        color: #0f172a;
+        background: linear-gradient(135deg, #38bdf8, #818cf8);
+        box-shadow: 0 14px 28px rgba(59, 130, 246, 0.28);
+    }
+
+    .auth-actions a.secondary {
+        background: transparent;
+        border: 1px solid rgba(30, 41, 59, 0.25);
+        box-shadow: none;
+    }
+
+    @media (min-width: 768px) {
+        main.auth-main {
+            padding: 4rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+{% block main_class %}auth-main{% endblock %}
+
+{% block navigation %}{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+    <h2>Sesión cerrada</h2>
+    <p>Has cerrado sesión correctamente. Para volver a ingresar utiliza tus credenciales corporativas.</p>
+    <div class="auth-actions">
+        <a href="{% url 'login' %}">Ir a iniciar sesión</a>
+        <a href="{% url 'home' %}" class="secondary">Volver al inicio</a>
+    </div>
+</div>
+{% endblock %}

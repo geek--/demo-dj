@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block extra_head %}
+<style>
+    body.auth-body {
+        background: #f1f5f9;
+        background-image: url("https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1600&q=60");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        min-height: 100vh;
+    }
+
+    main.auth-main {
+        flex: 1;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        padding: 2rem 1.5rem 3rem;
+        gap: 2.5rem;
+        background: rgba(15, 23, 42, 0.55);
+        backdrop-filter: blur(4px);
+    }
+
+    .auth-shell {
+        width: min(100%, 440px);
+        display: grid;
+        gap: 2rem;
+    }
+
+    .brand-header {
+        display: grid;
+        gap: 0.5rem;
+        text-align: center;
+        color: #f8fafc;
+    }
+
+    .brand-header h1 {
+        margin: 0;
+        font-size: clamp(1.35rem, 2vw + 1rem, 1.75rem);
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .brand-header span {
+        font-size: 0.95rem;
+        color: rgba(241, 245, 249, 0.85);
+    }
+
+    .auth-card {
+        background: rgba(248, 250, 252, 0.96);
+        border-radius: 1.25rem;
+        padding: clamp(1.5rem, 5vw, 2.5rem);
+        display: grid;
+        gap: 1.5rem;
+        box-shadow: 0 30px 60px rgba(15, 23, 42, 0.2);
+    }
+
+    .auth-card h2 {
+        margin: 0;
+        font-size: 1.35rem;
+        color: #0f172a;
+    }
+
+    .profile-summary {
+        display: grid;
+        gap: 0.75rem;
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 1rem;
+        padding: 1rem 1.25rem;
+        background: rgba(241, 245, 249, 0.6);
+    }
+
+    .profile-summary strong {
+        display: block;
+        font-size: 0.9rem;
+        letter-spacing: 0.04em;
+        color: #475569;
+        text-transform: uppercase;
+    }
+
+    .profile-summary span {
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    form.auth-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    form.auth-form input {
+        border-radius: 0.85rem;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+        padding: 0.85rem 1rem;
+        font-size: 1rem;
+        background: #ffffff;
+        color: #111827;
+    }
+
+    .field-errors {
+        color: #f87171;
+        font-size: 0.85rem;
+    }
+
+    form.auth-form button[type="submit"] {
+        border: none;
+        border-radius: 0.85rem;
+        padding: 0.95rem 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        background: linear-gradient(135deg, #0ea5e9, #2563eb);
+        color: #f8fafc;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    form.auth-form button[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+    }
+
+    .auth-footer {
+        text-align: center;
+        font-size: 0.95rem;
+        color: #0f172a;
+    }
+
+    .auth-footer a {
+        font-weight: 600;
+        color: #2563eb;
+    }
+
+    .profile-showcase {
+        display: grid;
+        gap: 1.25rem;
+        text-align: center;
+        color: #f8fafc;
+    }
+
+    .profile-showcase h3 {
+        margin: 0;
+        font-size: 1.35rem;
+    }
+
+    .profile-showcase p {
+        margin: 0;
+        line-height: 1.6;
+        color: rgba(241, 245, 249, 0.92);
+    }
+
+    @media (min-width: 768px) {
+        main.auth-main {
+            padding: 4rem;
+            grid-template-columns: repeat(2, minmax(0, 320px));
+            justify-content: center;
+            align-items: stretch;
+            gap: 3rem;
+        }
+
+        .auth-shell {
+            width: auto;
+            align-content: center;
+        }
+
+        .profile-showcase {
+            align-self: center;
+            max-width: 360px;
+            text-align: left;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+{% block main_class %}auth-main{% endblock %}
+
+{% block navigation %}{% endblock %}
+
+{% block content %}
+<div class="auth-shell">
+    <div class="brand-header">
+        <h1>Natu Peru Seeds</h1>
+        <span>Acceso seguro para colaboradores</span>
+    </div>
+    <div class="auth-card">
+        <h2>Inicia sesión en tu cuenta</h2>
+        <div class="profile-summary">
+            <strong>Perfil corporativo</strong>
+            <span>Utiliza tu correo y contraseña asignados para gestionar los módulos internos.</span>
+        </div>
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {{ form.username }}
+            {% if form.username.errors %}
+                <span class="field-errors">{{ form.username.errors|join:" " }}</span>
+            {% endif %}
+            {{ form.password }}
+            {% if form.password.errors %}
+                <span class="field-errors">{{ form.password.errors|join:" " }}</span>
+            {% endif %}
+            <button type="submit">Continuar</button>
+        </form>
+        <p class="auth-footer">
+            ¿No tienes una cuenta? <a href="{% url 'accounts:register' %}">Solicita tu registro</a>
+        </p>
+    </div>
+</div>
+<div class="profile-showcase">
+    <h3>¿Nuevo en la plataforma?</h3>
+    <p>
+        Regístrate para acceder a paneles personalizados, seguimiento de cultivos y a la comunidad agrícola
+        interna. Una vez dentro podrás configurar tu perfil y añadir la información de tu equipo.
+    </p>
+</div>
+{% endblock %}

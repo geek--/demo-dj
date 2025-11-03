@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Demo Django{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <style>
+        :root {
+            color-scheme: light;
+            --surface: #ffffff;
+            --surface-contrast: #111827;
+            --surface-muted: #6b7280;
+            --surface-accent: #2563eb;
+            --surface-border: #e5e7eb;
+            --layout-padding: 1rem;
+        }
+
+        body.layout-default {
+            margin: 0;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f8fafc;
+            color: var(--surface-contrast);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .site-header {
+            padding: var(--layout-padding);
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid var(--surface-border);
+            backdrop-filter: blur(8px);
+        }
+
+        .site-header nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .site-header nav .brand {
+            font-weight: 700;
+            font-size: 1.05rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .site-header nav .nav-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .site-header nav .nav-actions a,
+        .site-header nav .nav-actions button,
+        .site-header nav .nav-actions span {
+            font-size: 0.95rem;
+            text-decoration: none;
+            color: var(--surface-contrast);
+        }
+
+        main.site-main {
+            flex: 1;
+            padding: calc(var(--layout-padding) * 2) var(--layout-padding);
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message-stack {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .message-stack .message {
+            background: #ecfdf5;
+            border: 1px solid #6ee7b7;
+            border-radius: 0.75rem;
+            padding: 0.9rem 1.1rem;
+            color: #065f46;
+            font-weight: 500;
+        }
+
+        .page-section {
+            background: var(--surface);
+            border-radius: 1rem;
+            border: 1px solid var(--surface-border);
+            padding: clamp(1.5rem, 2vw, 2rem);
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08);
+        }
+
+        .page-section + .page-section {
+            margin-top: 1rem;
+        }
+
+        .profile-area {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .profile-card {
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .profile-card h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .profile-meta {
+            display: grid;
+            gap: 0.35rem;
+            color: var(--surface-muted);
+        }
+
+        @media (min-width: 768px) {
+            .site-header nav {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            main.site-main {
+                padding: calc(var(--layout-padding) * 3) calc(var(--layout-padding) * 2.5);
+            }
+
+            .profile-area {
+                grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+                align-items: start;
+            }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="{% block body_class %}layout-default{% endblock %}">
+    <header class="site-header">
+        {% block navigation %}
+        <nav>
+            <span class="brand">Demo Django</span>
+            <div class="nav-actions">
+                {% if user.is_authenticated %}
+                    <span class="welcome">Hola, {{ user.get_full_name|default:user.username }}</span>
+                    <a href="{% url 'home' %}#perfil">Perfil</a>
+                    <a href="{% url 'logout' %}">Cerrar sesión</a>
+                {% else %}
+                    <a href="{% url 'login' %}">Iniciar sesión</a>
+                    <a href="{% url 'accounts:register' %}">Crear cuenta</a>
+                {% endif %}
+            </div>
+        </nav>
+        {% endblock %}
+    </header>
+    <main class="{% block main_class %}site-main{% endblock %}">
+        {% if messages %}
+            <div class="message-stack" role="status">
+                {% for message in messages %}
+                    <div class="message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}
+        <section class="page-section profile-area" id="perfil">
+            <div class="profile-card">
+                <h2>Bienvenido a la demo</h2>
+                <p class="profile-meta">Explora el flujo de autenticación, registra un usuario y administra la sesión desde la parte pública del sitio.</p>
+            </div>
+            <div class="profile-card">
+                {% if user.is_authenticated %}
+                    <h3>Tu perfil</h3>
+                    <div class="profile-meta">
+                        <span><strong>Usuario:</strong> {{ user.username }}</span>
+                        <span><strong>Nombre:</strong> {{ user.get_full_name|default:"Pendiente" }}</span>
+                        <span><strong>Correo:</strong> {{ user.email|default:"Sin definir" }}</span>
+                    </div>
+                {% else %}
+                    <h3>Comienza a usar la aplicación</h3>
+                    <div class="profile-meta">
+                        <span>Inicia sesión para acceder a tu panel personal.</span>
+                        <span>¿Aún no tienes cuenta? <a href="{% url 'accounts:register' %}">Crea una cuenta</a> en segundos.</span>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+        {% endblock %}
+    </main>
+</body>
+</html>
