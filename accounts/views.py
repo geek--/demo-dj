@@ -6,7 +6,9 @@ from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views import View
+from django.views.decorators.cache import never_cache
 
 from .forms import StyledAuthenticationForm, UserRegistrationForm
 
@@ -19,6 +21,7 @@ class UserLoginView(LoginView):
     form_class = StyledAuthenticationForm
 
 
+@method_decorator(never_cache, name="dispatch")
 class UserLogoutView(View):
     """Render a custom logged-out screen and clear the session."""
 

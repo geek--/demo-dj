@@ -5,39 +5,41 @@
 {% block extra_head %}
 <style>
     body.auth-body {
-        background: #f1f5f9;
-        background-image: url("https://images.unsplash.com/photo-1526401485004-46910ecc8e51?auto=format&fit=crop&w=1600&q=60");
-        background-size: cover;
-        background-position: center;
+        --auth-bg-image: radial-gradient(circle at 18% 20%, rgba(59, 130, 246, 0.25), transparent 55%),
+            radial-gradient(circle at 82% 12%, rgba(94, 234, 212, 0.25), transparent 50%),
+            linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #334155 100%);
+        margin: 0;
         min-height: 100vh;
         display: flex;
+        background-color: #0f172a;
+        background-image: var(--auth-bg-image);
+        background-size: cover;
+        background-position: center;
     }
 
     main.auth-main {
         flex: 1;
         display: grid;
+        gap: 2rem;
+        padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 6vw, 4rem);
         align-content: center;
         justify-items: center;
-        padding: 2rem 1.5rem 3rem;
-        gap: 2.5rem;
-        background: rgba(30, 41, 59, 0.6);
-        backdrop-filter: blur(4px);
     }
 
     .auth-shell {
-        width: min(100%, 420px);
-        background: rgba(248, 250, 252, 0.98);
-        border-radius: 1.25rem;
-        padding: clamp(1.75rem, 5vw, 2.75rem);
+        width: min(100%, 26rem);
         display: grid;
         gap: 1.5rem;
         text-align: center;
-        box-shadow: 0 28px 55px rgba(15, 23, 42, 0.28);
+        padding: clamp(1.75rem, 5vw, 2.5rem);
+        border-radius: 1rem;
+        background: rgba(248, 250, 252, 0.96);
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
     }
 
     .auth-shell h2 {
         margin: 0;
-        font-size: 1.45rem;
+        font-size: 1.4rem;
         color: #0f172a;
     }
 
@@ -50,13 +52,12 @@
     .auth-actions {
         display: grid;
         gap: 0.75rem;
-        margin-top: 0.5rem;
     }
 
     .auth-actions a {
         display: inline-block;
+        padding: 0.9rem 1.15rem;
         border-radius: 0.85rem;
-        padding: 0.9rem 1.25rem;
         font-weight: 600;
         text-decoration: none;
         color: #0f172a;
@@ -66,13 +67,14 @@
 
     .auth-actions a.secondary {
         background: transparent;
-        border: 1px solid rgba(30, 41, 59, 0.25);
+        color: #1e293b;
+        border: 1px solid rgba(148, 163, 184, 0.4);
         box-shadow: none;
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: 48rem) {
         main.auth-main {
-            padding: 4rem;
+            align-content: center;
         }
     }
 </style>
