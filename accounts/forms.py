@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 
 
 class UserRegistrationForm(UserCreationForm):
-    """Extend the default user creation form to include email."""
+    """Extend the default user creation form to include email and styling."""
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -15,6 +15,21 @@ class UserRegistrationForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields["email"].required = True
 
+        field_placeholders = {
+            "username": "Ej. agricultor.natu",
+            "email": "correo@natuseeds.com",
+            "password1": "Contraseña segura",
+            "password2": "Repite tu contraseña",
+        }
+
+        for name, field in self.fields.items():
+            field.widget.attrs.update(
+                {
+                    "placeholder": field_placeholders.get(name, ""),
+                    "class": "auth-input",
+                }
+            )
+
 
 class StyledAuthenticationForm(AuthenticationForm):
     """Authentication form with placeholders and consistent styling."""
@@ -22,8 +37,15 @@ class StyledAuthenticationForm(AuthenticationForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["username"].widget.attrs.update(
-            {"placeholder": "Ingrese su correo corporativo", "autofocus": True}
+            {
+                "placeholder": "Ingresa tu correo corporativo",
+                "autofocus": True,
+                "class": "auth-input",
+            }
         )
         self.fields["password"].widget.attrs.update(
-            {"placeholder": "Ingrese su contraseña"}
+            {
+                "placeholder": "Ingresa tu contraseña",
+                "class": "auth-input",
+            }
         )

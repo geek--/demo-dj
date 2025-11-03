@@ -1,8 +1,8 @@
 """Views for user registration and authentication."""
 
 from django.contrib import messages
-from django.contrib.auth import login
-from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import login, logout
+from django.contrib.auth.views import LoginView
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -19,24 +19,24 @@ class UserLoginView(LoginView):
     form_class = StyledAuthenticationForm
 
 
-class UserLogoutView(LogoutView):
-    """Handle user logout for both GET and POST requests."""
+class UserLogoutView(View):
+    """Render a custom logged-out screen and clear the session."""
 
-    next_page = reverse_lazy("login")
     template_name = "registration/logged_out.html"
-    http_method_names = ["get", "post", "options", "head"]
+    http_method_names = ["get", "post", "head", "options"]
 
-    def _add_logout_message(self, request: HttpRequest) -> None:
-        if request.user.is_authenticated:
+    def _logout_and_render(self, request: HttpRequest) -> HttpResponse:
+        was_authenticated = request.user.is_authenticated
+        logout(request)
+        if was_authenticated:
             messages.success(request, "Has cerrado sesión correctamente.")
+        return render(request, self.template_name)
 
     def get(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self._add_logout_message(request)
-        return super().get(request, *args, **kwargs)
+        return self._logout_and_render(request)
 
     def post(self, request: HttpRequest, *args, **kwargs) -> HttpResponse:
-        self._add_logout_message(request)
-        return super().post(request, *args, **kwargs)
+        return self._logout_and_render(request)
 
 
 class RegisterView(View):

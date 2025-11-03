@@ -2,32 +2,200 @@
 
 {% block title %}Crear cuenta{% endblock %}
 
+{% block extra_head %}
+<style>
+    body.auth-body {
+        background: #f1f5f9;
+        background-image: url("https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1600&q=60");
+        background-size: cover;
+        background-position: center;
+        min-height: 100vh;
+        display: flex;
+    }
+
+    main.auth-main {
+        flex: 1;
+        display: grid;
+        align-content: center;
+        justify-items: center;
+        padding: 2rem 1.5rem 3rem;
+        gap: 2.5rem;
+        background: rgba(30, 58, 138, 0.55);
+        backdrop-filter: blur(4px);
+    }
+
+    .auth-shell {
+        width: min(100%, 460px);
+        display: grid;
+        gap: 1.75rem;
+    }
+
+    .auth-card {
+        background: rgba(248, 250, 252, 0.98);
+        border-radius: 1.25rem;
+        padding: clamp(1.5rem, 5vw, 2.75rem);
+        display: grid;
+        gap: 1.35rem;
+        box-shadow: 0 28px 55px rgba(30, 41, 59, 0.28);
+    }
+
+    .auth-card h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: #0f172a;
+    }
+
+    .auth-card p {
+        margin: 0;
+        color: #475569;
+    }
+
+    form.auth-form {
+        display: grid;
+        gap: 1rem;
+    }
+
+    form.auth-form label {
+        display: grid;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+        color: #0f172a;
+        font-weight: 600;
+    }
+
+    form.auth-form input {
+        border-radius: 0.85rem;
+        border: 1px solid rgba(15, 23, 42, 0.1);
+        padding: 0.85rem 1rem;
+        font-size: 1rem;
+    }
+
+    .field-errors {
+        color: #dc2626;
+        font-size: 0.85rem;
+    }
+
+    button.auth-submit {
+        margin-top: 0.5rem;
+        border: none;
+        border-radius: 0.85rem;
+        padding: 0.95rem 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        background: linear-gradient(135deg, #22d3ee, #3b82f6);
+        color: #0f172a;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button.auth-submit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 24px rgba(37, 99, 235, 0.3);
+    }
+
+    .auth-footer {
+        text-align: center;
+        font-size: 0.95rem;
+        color: #f8fafc;
+    }
+
+    .auth-footer a {
+        font-weight: 600;
+        color: #e0f2fe;
+    }
+
+    .profile-highlight {
+        display: grid;
+        gap: 1.25rem;
+        text-align: center;
+        color: #f8fafc;
+    }
+
+    .profile-highlight h2 {
+        margin: 0;
+        font-size: 1.45rem;
+    }
+
+    .profile-highlight p {
+        margin: 0;
+        line-height: 1.65;
+        color: rgba(226, 232, 240, 0.95);
+    }
+
+    @media (min-width: 768px) {
+        main.auth-main {
+            padding: 4rem;
+            grid-template-columns: repeat(2, minmax(0, 320px));
+            gap: 3rem;
+            justify-content: center;
+        }
+
+        .auth-shell {
+            width: auto;
+        }
+
+        .profile-highlight {
+            align-self: center;
+            max-width: 360px;
+            text-align: left;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body_class %}auth-body{% endblock %}
+{% block main_class %}auth-main{% endblock %}
+
+{% block navigation %}{% endblock %}
+
 {% block content %}
-<h1>Crear cuenta</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <label>
-        Usuario
-        {{ form.username }}
-        {{ form.username.errors }}
-    </label>
-    <label>
-        Correo electrónico
-        {{ form.email }}
-        {{ form.email.errors }}
-    </label>
-    <label>
-        Contraseña
-        {{ form.password1 }}
-        {{ form.password1.errors }}
-    </label>
-    <label>
-        Confirmar contraseña
-        {{ form.password2 }}
-        {{ form.password2.errors }}
-    </label>
-    <button type="submit">Registrarme</button>
-</form>
-<p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión</a>.</p>
+<div class="auth-shell">
+    <div class="auth-card">
+        <h1>Crear cuenta</h1>
+        <p>Completa los datos para habilitar tu acceso. Podrás actualizar tu perfil una vez dentro.</p>
+        <form method="post" class="auth-form" novalidate>
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            <label>
+                Usuario corporativo
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <span class="field-errors">{{ form.username.errors|join:" " }}</span>
+                {% endif %}
+            </label>
+            <label>
+                Correo electrónico
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <span class="field-errors">{{ form.email.errors|join:" " }}</span>
+                {% endif %}
+            </label>
+            <label>
+                Contraseña
+                {{ form.password1 }}
+                {% if form.password1.errors %}
+                    <span class="field-errors">{{ form.password1.errors|join:" " }}</span>
+                {% endif %}
+            </label>
+            <label>
+                Confirmar contraseña
+                {{ form.password2 }}
+                {% if form.password2.errors %}
+                    <span class="field-errors">{{ form.password2.errors|join:" " }}</span>
+                {% endif %}
+            </label>
+            <button type="submit" class="auth-submit">Crear cuenta</button>
+        </form>
+    </div>
+    <p class="auth-footer">
+        ¿Ya tienes acceso? <a href="{% url 'login' %}">Inicia sesión aquí</a>
+    </p>
+</div>
+<div class="profile-highlight">
+    <h2>Gestiona tu información agrícola</h2>
+    <p>
+        Al registrarte podrás mantener tus datos, cultivos y equipos actualizados para el seguimiento integral.
+        Toda la configuración es editable desde tu panel de perfil.
+    </p>
+</div>
 {% endblock %}
