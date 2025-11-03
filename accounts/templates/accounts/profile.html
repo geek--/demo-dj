@@ -10,6 +10,22 @@
 <style>
     body.layout-profile {
         background: #0b101a;
+        --pico-block-spacing-vertical: 0;
+        --pico-block-spacing-horizontal: 0;
+        --pico-form-element-spacing-vertical: 0;
+        --pico-form-element-spacing-horizontal: 0;
+        --pico-border-radius: 0;
+        --pico-font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body.layout-profile main,
+    body.layout-profile header,
+    body.layout-profile nav,
+    body.layout-profile aside,
+    body.layout-profile section,
+    body.layout-profile article {
+        max-width: none;
+        margin: 0;
     }
 
     main.profile-main {
@@ -31,10 +47,10 @@
         display: grid;
         grid-template-columns: auto 1fr auto;
         align-items: center;
-        padding: 0.65rem 1rem;
+        padding: 0.5rem 0.85rem;
         background: #232529;
         border-bottom: 1px solid rgba(15, 23, 42, 0.35);
-        gap: 1rem;
+        gap: 0.75rem;
     }
 
     .window-controls {
@@ -105,17 +121,17 @@
     .workspace-rail {
         display: flex;
         align-items: center;
-        gap: 0.65rem;
-        padding: 0.75rem 0.6rem;
+        gap: 0.5rem;
+        padding: 0.65rem 0.55rem;
         background: #0f1013;
         overflow-x: auto;
         border-bottom: 1px solid rgba(15, 23, 42, 0.45);
     }
 
     .workspace-rail button {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 0.6rem;
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 0.55rem;
         border: none;
         background: rgba(248, 250, 252, 0.08);
         color: rgba(255, 255, 255, 0.8);
@@ -136,9 +152,9 @@
 
     .workspace-secondary {
         background: #3f0e40;
-        padding: 1.15rem 1.25rem 1.75rem;
+        padding: 0.95rem 1rem 1.35rem;
         display: grid;
-        gap: 1.25rem;
+        gap: 0.95rem;
     }
 
     .workspace-secondary header {
@@ -160,7 +176,7 @@
 
     .nav-group {
         display: grid;
-        gap: 0.4rem;
+        gap: 0.35rem;
     }
 
     .nav-group__label {
@@ -172,7 +188,7 @@
 
     .nav-group__list {
         display: grid;
-        gap: 0.2rem;
+        gap: 0.12rem;
     }
 
     .nav-group__list form {
@@ -184,7 +200,7 @@
         display: flex;
         align-items: center;
         gap: 0.55rem;
-        padding: 0.4rem 0.5rem;
+        padding: 0.35rem 0.45rem;
         border-radius: 0.4rem;
         background: transparent;
         border: none;
@@ -233,10 +249,10 @@
     }
 
     .workspace-channel-header {
-        padding: 1.2rem 1.5rem 0.9rem;
+        padding: 0.95rem 1.25rem 0.75rem;
         border-bottom: 1px solid #e2e8f0;
         display: grid;
-        gap: 0.35rem;
+        gap: 0.3rem;
         align-content: start;
     }
 
@@ -263,9 +279,9 @@
 
     .channel-meta-row {
         display: flex;
-        gap: 1rem;
+        gap: 0.8rem;
         flex-wrap: wrap;
-        font-size: 0.82rem;
+        font-size: 0.8rem;
         color: #64748b;
     }
 
@@ -290,9 +306,9 @@
     }
 
     .channel-threads {
-        padding: 1.25rem 1.5rem 2rem;
+        padding: 1.05rem 1.35rem 1.65rem;
         display: grid;
-        gap: 1.2rem;
+        gap: 0.95rem;
         overflow-y: auto;
         min-height: 0;
         align-content: start;
@@ -300,20 +316,20 @@
 
     .message-thread {
         display: grid;
-        gap: 1.1rem;
+        gap: 0.85rem;
     }
 
     .message-card {
         display: grid;
         grid-template-columns: auto 1fr;
-        gap: 0.7rem;
+        gap: 0.6rem;
         align-items: start;
     }
 
     .message-avatar {
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 0.4rem;
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 0.35rem;
         background: #611f69;
         color: #f8fafc;
         display: grid;
@@ -323,7 +339,7 @@
 
     .message-content {
         display: grid;
-        gap: 0.35rem;
+        gap: 0.3rem;
     }
 
     .message-meta {
@@ -343,23 +359,23 @@
     }
 
     .message-text {
-        font-size: 0.92rem;
+        font-size: 0.9rem;
         color: #4a5568;
-        line-height: 1.6;
+        line-height: 1.55;
     }
 
     .message-attachments {
         display: grid;
-        gap: 0.55rem;
+        gap: 0.45rem;
     }
 
     .attachment-card {
         border-left: 3px solid #611f69;
         background: #f8f5fb;
-        padding: 0.75rem 1rem;
-        border-radius: 0.4rem;
+        padding: 0.65rem 0.85rem;
+        border-radius: 0.35rem;
         display: grid;
-        gap: 0.35rem;
+        gap: 0.3rem;
     }
 
     .attachment-card strong {
@@ -369,16 +385,16 @@
 
     .message-composer {
         border-top: 1px solid #e2e8f0;
-        padding: 0.9rem 1.5rem 1.1rem;
+        padding: 0.8rem 1.25rem 0.95rem;
         display: grid;
-        gap: 0.65rem;
+        gap: 0.55rem;
         background: #ffffff;
     }
 
     .composer-actions {
         display: flex;
         justify-content: space-between;
-        gap: 1rem;
+        gap: 0.85rem;
         align-items: center;
     }
 
@@ -393,17 +409,17 @@
 
     .message-composer textarea {
         width: 100%;
-        min-height: 4rem;
-        border-radius: 0.45rem;
+        min-height: 3.5rem;
+        border-radius: 0.4rem;
         border: 1px solid #d5d9e3;
-        padding: 0.65rem 0.85rem;
-        font-size: 0.92rem;
+        padding: 0.55rem 0.75rem;
+        font-size: 0.9rem;
         resize: vertical;
     }
 
     .composer-submit {
         justify-self: end;
-        padding: 0.45rem 1.1rem;
+        padding: 0.4rem 1.05rem;
         border-radius: 999px;
         background: #611f69;
         color: #ffffff;
@@ -415,17 +431,17 @@
     .channel-detail {
         border-left: 1px solid #e2e8f0;
         background: #f8fafc;
-        padding: 1.25rem 1.35rem 2rem;
+        padding: 1.1rem 1.2rem 1.65rem;
         display: grid;
-        gap: 1.4rem;
+        gap: 1.1rem;
         overflow-y: auto;
         min-height: 0;
     }
 
     .detail-card {
         display: grid;
-        gap: 0.6rem;
-        font-size: 0.85rem;
+        gap: 0.5rem;
+        font-size: 0.83rem;
         color: #475569;
     }
 
